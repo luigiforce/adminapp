@@ -49,9 +49,9 @@ workflows:
       - deployDEV:
           requires: [ run_local_tests ]
           context: DEV
-            filters:
-              branches:
-                only: playground
+          filters:
+            branches:
+              only: playground
 
       - ApproveDEV:
         requires: [ deployDEV ]
