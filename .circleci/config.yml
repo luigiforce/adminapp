@@ -63,7 +63,7 @@ workflows:
                 
       - ApproveTEST:
         requires: [ deployTEST ]
-          type: approval
+        type: approval
 
       - deployBETA:
           requires: [ ApproveTEST ]
