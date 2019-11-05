@@ -2,7 +2,7 @@
 auth: &auth
   run:
     name: 'sign into salesforce'
-      command: 'bin/'
+      command: 'bin/auth'
 
 request_docker: &request_docker
   working_directory: '~/project'
