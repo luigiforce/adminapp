@@ -6,8 +6,8 @@ auth: &auth
 
 request_docker: &request_docker
   working_directory: '~/project'
-    docker:
-      - image: 'https://hub.docker.com/r/salestrip/sfdx-cli/'
+  docker:
+    - image: 'https://hub.docker.com/r/salestrip/sfdx-cli/'
 
 source_deploy: &source_deploy
   run:
