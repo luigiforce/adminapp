@@ -54,7 +54,7 @@ workflows:
               only: playground
 
       - ApproveDEV:
-        requires: [ deployDEV ]
+          requires: [ deployDEV ]
           type: approval
 
       - deployTest:
@@ -62,8 +62,8 @@ workflows:
           context: TEST
                 
       - ApproveTEST:
-        requires: [ deployTEST ]
-        type: approval
+          requires: [ deployTEST ]
+          type: approval
 
       - deployBETA:
           requires: [ ApproveTEST ]
