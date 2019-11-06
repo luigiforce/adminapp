@@ -8,7 +8,7 @@ auth: &auth
       context: DEV
       command: |
         #Authorize target org
-        sfdx force:auth:jwt:grant --instanceurl $ENDPOINT  --clientid $CONSUMER_KEY --jwtkeyfile $JWT_KEY --username $USER_NAME --setalias dev -d
+        sfdx force:auth:jwt:grant --instanceurl $ENDPOINT --clientid $CONSUMER_KEY --jwtkeyfile jwt/server.key --username $USER_NAME --setalias dev -d
 
 createSFDX: &createSFDX
     run:
@@ -81,5 +81,5 @@ jobs:
         - *createSFDX
         - *getCLI
         - *installCLI
-        - *auth
         - *decryptKey
+        - *auth
