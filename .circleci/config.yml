@@ -9,6 +9,20 @@ auth: &auth
         command: |
           #Authorize target org
           sfdx force:auth:jwt:grant --instanceurl $ENDPOINT  --clientid $CONSUMER_KEY --jwtkeyfile $JWT_KEY --username $USER_NAME --setalias dev -d 
+
+createdSFDX: &createdSFDX
+    - run:
+        name: "Create SFDX Folder" 
+        command: |
+          mkdir sfdx
+
+decryptKey: &decryptKey
+    - run:
+        name: Decrypt server key
+        command: |
+          #Decrypt server key
+          openssl enc -nosalt -aes-256-cbc -d -in jwt/server.key.enc -out jwt/server.key -base64 -K $DECRYPTION_KEY -iv $DECRYPTION_IV
+      
 deploy: &deploy
     - run:
         name: Deploy to Target Deployment Org
@@ -19,6 +33,20 @@ deploy: &deploy
       #Example shows how to run a check only deploy.
       #sfdx force:mdapi:deploy --checkonly --wait 10 --deploydir $DEPLOYDIR --targetusername UAT --testlevel $TESTLEVEL
 
+getCLI: &getCLI
+    - run:
+        name: Download CLI
+        command: |
+          # Download cli
+          wget -qO- $DX_CLI_URL | tar xJ -C sfdx --strip-components 1
+
+installCLI: &installCLI
+    - run:
+      name: Install CLI
+      command: |
+        # Install the cli
+        ./sfdx/install
+        sfdx
 
 version: 2
 jobs: 
@@ -34,44 +62,10 @@ jobs:
       - TESTLEVEL: RunLocalTests
       - DEPLOYDIR: src
 
+  prepare:
     steps:
-      - checkout
-      - run:
-          name: "Create SFDX Folder" 
-          command: |
-            mkdir sfdx
-
-      - run:
-          name: Download CLI
-          command: |
-            # Download cli
-            wget -qO- $DX_CLI_URL | tar xJ -C sfdx --strip-components 1
-
-      - run:
-          name: Install CLI
-          command: |
-            # Install the cli
-            ./sfdx/install
-            sfdx
-
-      #- run:
-       #   name: Decrypt server key
-        #  command: |
-         #   #Decrypt server key
-          #  openssl enc -nosalt -aes-256-cbc -d -in jwt/server.key.enc -out jwt/server.key -base64 -K $DECRYPTION_KEY -iv $DECRYPTION_IV
-      
-      workflows:
-        version: 1
-        pipeline:
-          jobs:
-
-          - deploy:
-            requires: [ checkout ]
-            context: DEV
-          
-          - deployDEV:
-              requires: [ deploy ]
-              context: TEST
-                filters:
-                  branches:
-                    only: playground
+      - *createdSFDX
+      - *getCLI
+      - *installCLI
+      - *auth
+      - *decryptKey
