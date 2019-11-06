@@ -47,6 +47,24 @@ build_docker: &build_docker
         - TESTLEVEL: RunLocalTests
         - DEPLOYDIR: src
 
+  deployDev:
+    <<: *build_docker
+    steps:
+        - checkout #inbuild command through Circle to checkout the repo you authd 
+        - *createSFDX
+        - *getCLI
+        - *installCLI
+        - *decryptKey
+        - *auth
+        - *deploySource
+  
+  deploySource: &deploySource
+    run:
+      name: Deploying project via source api
+        command: |
+          cd project/
+          sfdx force:source:deploy -u dev -p force-app/ -w 8
+
 getCLI: &getCLI
     run:
       name: Download CLI
@@ -85,10 +103,26 @@ jobs:
       - DEPLOYDIR: src
 
     steps:
-        - checkout
+        - checkout #inbuild command through Circle to checkout the repo you authd 
         - *createSFDX
         - *getCLI
         - *installCLI
         - *decryptKey
         - *auth
         - *run_local_tests
+
+workflows:
+  version: 1
+    pipeline:
+      jobs:
+        - build
+        - deployToEnv:
+          requires: [ build ]
+          context: DEV
+            filters:
+              branches:
+                only: master
+        
+        - approveEnv:
+            requires: [ deployToEnv ]
+              type: approval
