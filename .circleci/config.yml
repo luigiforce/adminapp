@@ -64,7 +64,7 @@ jobs:
         version: 1
         pipeline:
           jobs:
-          - checkout
+
           - deploy:
             requires: [ checkout ]
             context: DEV
