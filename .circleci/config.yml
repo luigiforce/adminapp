@@ -3,45 +3,45 @@
 ######
 
 auth: &auth
-    - run:
-        name: Authorize Target Deployment Org
-        context: DEV
-        command: |
-          #Authorize target org
-          'sfdx force:auth:jwt:grant --instanceurl $ENDPOINT  --clientid $CONSUMER_KEY --jwtkeyfile $JWT_KEY --username $USER_NAME --setalias dev -d' 
+    run:
+      name: Authorize Target Deployment Org
+      context: DEV
+      command: |
+        #Authorize target org
+        'sfdx force:auth:jwt:grant --instanceurl $ENDPOINT  --clientid $CONSUMER_KEY --jwtkeyfile $JWT_KEY --username $USER_NAME --setalias dev -d' 
 
-createdSFDX: &createdSFDX
-    - run:
-        name: "Create SFDX Folder" 
-        command: |
-          'mkdir sfdx'
+createSFDX: &createSFDX
+    run:
+      name: "Create SFDX Folder" 
+      command: |
+        'mkdir sfdx'
 
 decryptKey: &decryptKey
-    - run:
-        name: Decrypt server key
-        command: |
-          #Decrypt server key
-          'openssl enc -nosalt -aes-256-cbc -d -in jwt/server.key.enc -out jwt/server.key -base64 -K $DECRYPTION_KEY -iv $DECRYPTION_IV'
+    run:
+      name: Decrypt server key
+      command: |
+        #Decrypt server key
+        'openssl enc -nosalt -aes-256-cbc -d -in jwt/server.key.enc -out jwt/server.key -base64 -K $DECRYPTION_KEY -iv $DECRYPTION_IV'
       
 deploy: &deploy
-    - run:
-        name: Deploy to Target Deployment Org
-        command: |
-          #Deploy to target deployment org and run unit tests. 
-          'sfdx force:mdapi:deploy --wait 10 --deploydir $DEPLOYDIR --targetusername UAT --testlevel $TESTLEVEL'
+    run:
+      name: Deploy to Target Deployment Org
+      command: |
+        #Deploy to target deployment org and run unit tests. 
+        'sfdx force:mdapi:deploy --wait 10 --deploydir $DEPLOYDIR --targetusername UAT --testlevel $TESTLEVEL'
       
       #Example shows how to run a check only deploy.
       #sfdx force:mdapi:deploy --checkonly --wait 10 --deploydir $DEPLOYDIR --targetusername UAT --testlevel $TESTLEVEL
 
 getCLI: &getCLI
-    - run:
-        name: Download CLI
-        command: |
-          # Download cli
-          'wget -qO- $DX_CLI_URL | tar xJ -C sfdx --strip-components 1'
+    run:
+      name: Download CLI
+      command: |
+        # Download cli
+        'wget -qO- $DX_CLI_URL | tar xJ -C sfdx --strip-components 1'
 
 installCLI: &installCLI
-    - run:
+    run:
       name: Install CLI
       command: |
         # Install the cli
@@ -64,7 +64,7 @@ jobs:
 
   prepare:
     steps:
-      - *createdSFDX
+      - *createSFDX
       - *getCLI
       - *installCLI
       - *auth
