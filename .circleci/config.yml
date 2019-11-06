@@ -70,15 +70,16 @@ run_local_tests: &run_local_tests
       sfdx force:apex:test:run -l RunLocalTests -r human -c -d /test -u dev
 
 version: 1
-jobs: 
-  <<: *build_docker 
-  steps:
-      - checkout
-      - *createSFDX
-      - *getCLI
-      - *installCLI
-      - *decryptKey
-      - *auth
+jobs:
+  buildenv:
+    <<: *build_docker 
+    steps:
+        - checkout
+        - *createSFDX
+        - *getCLI
+        - *installCLI
+        - *decryptKey
+        - *auth
   
   runTests:
     <<: *build_docker 
