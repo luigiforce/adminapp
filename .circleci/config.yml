@@ -1,6 +1,25 @@
 ######
 ## https://github.com/forcedotcom/sfdx-circleci-org/blob/master/.circleci/config.yml
 ######
+
+auth: &auth
+    - run:
+        name: Authorize Target Deployment Org
+        context: DEV
+        command: |
+          #Authorize target org
+          sfdx force:auth:jwt:grant --instanceurl $ENDPOINT  --clientid $CONSUMER_KEY --jwtkeyfile $JWT_KEY --username $USER_NAME --setalias dev -d 
+deploy: &deploy
+    - run:
+        name: Deploy to Target Deployment Org
+        command: |
+          #Deploy to target deployment org and run unit tests. 
+          sfdx force:mdapi:deploy --wait 10 --deploydir $DEPLOYDIR --targetusername UAT --testlevel $TESTLEVEL
+      
+      #Example shows how to run a check only deploy.
+      #sfdx force:mdapi:deploy --checkonly --wait 10 --deploydir $DEPLOYDIR --targetusername UAT --testlevel $TESTLEVEL
+
+
 version: 2
 jobs: 
   build: 
@@ -45,19 +64,14 @@ jobs:
         version: 1
         pipeline:
           jobs:
-
-          - run:
-              name: Authorize Target Deployment Org
-              context: DEV
-              command: |
-                #Authorize target org
-                sfdx force:auth:jwt:grant --instanceurl $ENDPOINT  --clientid $CONSUMER_KEY --jwtkeyfile $JWT_KEY --username $USER_NAME --setalias dev -d 
+          - checkout
+          - deploy:
+            requires: [ checkout ]
+            context: DEV
           
-          - run:
-              name: Deploy to Target Deployment Org
-              command: |
-                #Deploy to target deployment org and run unit tests. 
-                sfdx force:mdapi:deploy --wait 10 --deploydir $DEPLOYDIR --targetusername UAT --testlevel $TESTLEVEL
-            
-            #Example shows how to run a check only deploy.
-            #sfdx force:mdapi:deploy --checkonly --wait 10 --deploydir $DEPLOYDIR --targetusername UAT --testlevel $TESTLEVEL
+          - deployDEV:
+              requires: [ deploy ]
+              context: TEST
+                filters:
+                  branches:
+                    only: playground
