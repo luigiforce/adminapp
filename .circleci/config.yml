@@ -63,8 +63,8 @@ installCLI: &installCLI
 version: 1
 jobs: 
   enviornment_setup:
+    <<: *build_docker #executer step
     steps:
-        - *build_docker
         - *createSFDX
         - *getCLI
         - *installCLI
