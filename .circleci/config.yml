@@ -48,7 +48,7 @@ installCLI: &installCLI
         ./sfdx/install
         sfdx
 
-version: 2
+version: 1
 jobs: 
   build: 
     docker:
