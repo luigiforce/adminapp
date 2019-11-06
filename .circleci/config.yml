@@ -34,6 +34,7 @@ deploy: &deploy
       #sfdx force:mdapi:deploy --checkonly --wait 10 --deploydir $DEPLOYDIR --targetusername UAT --testlevel $TESTLEVEL
 
 build_docker: &build_docker
+    working_directory: '~/project'
     build:
       docker:
         - image: circleci/node:8.9.4
@@ -70,27 +71,16 @@ run_local_tests: &run_local_tests
 
 version: 1
 jobs: 
-  #executer step <<: *build_docker 
-  build:
-    docker:
-      - image: circleci/node:8.9.4
-    environment:
-      # from https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_install_cli_standalone.htm
-      # and https://developer.salesforce.com/media/salesforce-cli/manifest.json
-
-      # Variables used in build steps
-      - DX_CLI_URL: https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
-      - TESTLEVEL: RunLocalTests
-      - DEPLOYDIR: src
-
-    steps:
-        - checkout
-        - *createSFDX
-        - *getCLI
-        - *installCLI
-        - *decryptKey
-        - *auth
+  <<: *build_docker 
+  steps:
+      - checkout
+      - *createSFDX
+      - *getCLI
+      - *installCLI
+      - *decryptKey
+      - *auth
   
   runTests:
+    <<: *build_docker 
     steps:
       - *run_local_tests
