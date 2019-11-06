@@ -33,6 +33,18 @@ deploy: &deploy
       #Example shows how to run a check only deploy.
       #sfdx force:mdapi:deploy --checkonly --wait 10 --deploydir $DEPLOYDIR --targetusername UAT --testlevel $TESTLEVEL
 
+build_docker: &build_docker
+    docker:
+      - image: circleci/node:8.9.4
+    environment:
+      # from https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_install_cli_standalone.htm
+      # and https://developer.salesforce.com/media/salesforce-cli/manifest.json
+
+      # Variables used in build steps
+      - DX_CLI_URL: https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
+      - TESTLEVEL: RunLocalTests
+      - DEPLOYDIR: src
+
 getCLI: &getCLI
     run:
       name: Download CLI
@@ -50,22 +62,11 @@ installCLI: &installCLI
 
 version: 1
 jobs: 
-  build: 
-    docker:
-      - image: circleci/node:8.9.4
-    environment:
-      # from https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_install_cli_standalone.htm
-      # and https://developer.salesforce.com/media/salesforce-cli/manifest.json
-
-      # Variables used in build steps
-      - DX_CLI_URL: https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
-      - TESTLEVEL: RunLocalTests
-      - DEPLOYDIR: src
-
-  prepare:
+  enviornment_setup:
     steps:
-      - *createSFDX
-      - *getCLI
-      - *installCLI
-      - *auth
-      - *decryptKey
+        - *build_docker
+        - *createSFDX
+        - *getCLI
+        - *installCLI
+        - *auth
+        - *decryptKey
