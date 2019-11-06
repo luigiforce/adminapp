@@ -67,7 +67,7 @@ run_local_tests: &run_local_tests
     name: Run all local tests
     command: |
       mkdir /test
-      sfdx force:apex:test:run -l RunLocalTests -r human -c -d /test -u dev
+      sfdx force:apex:test:run -l RunLocalTests -r human -c -d test -u dev
 
 version: 1
 jobs: 
