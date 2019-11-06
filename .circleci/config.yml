@@ -1,69 +1,52 @@
+######
+## https://github.com/forcedotcom/sfdx-circleci-org/blob/master/.circleci/config.yml
+######
+version: 2
+jobs: 
+  build: 
+    docker:
+      - image: circleci/node:8.9.4
+    environment:
+      # from https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_install_cli_standalone.htm
+      # and https://developer.salesforce.com/media/salesforce-cli/manifest.json
 
-auth: &auth
-  run:
-    name: 'sign into salesforce'
-    command: 'bin/auth'
-
-request_docker: &request_docker
-  docker:
-    - image: 'https://hub.docker.com/r/salestrip/sfdx-cli/'
-
-source_deploy: &source_deploy
-  run:
-    name: 'deploy using source deploy'
-    command: 'sfdx force:source:deploy -p deploydir/ -u "${ALIAS}"'
-
-specify_path: &specify_path
-  persist_to_workspace:
-    root: '~'
-    paths: [ 'project' ]
-
-run_local_test: &run_local_test
-  run:
-    name: 'running all local tests'
-    command: 'sfdx force:apex:test:run -l  RunLocalTests --verbose -a "${ALIAS}"'
-
-jobs:
-  spin_up_env:
-    - *request_docker
-    - *auth
-
-
-deployDev:
-  <<: *source_deploy
-deployTest:
-  <<: *source_deploy
-deployBeta:
-  <<: *source_deploy
-
-workflows:
-  pipeline:
-    jobs:
-      - run_local_tests:
-        context: DEV
-
-      - static_code_analysis:
-        requires: [ run_local_tests ]
-
-      - deployDEV:
-          requires: [ run_local_tests ]
-          context: DEV
-          filters:
-            branches:
-              only: playground
-
-      - ApproveDEV:
-          requires: [ deployDEV ]
-          type: approval
-
-      - deployTest:
-          requires: [ ApproveDEV ]
-          context: TEST
-                
-      - ApproveTEST:
-          requires: [ deployTEST ]
-          type: approval
-
-      - deployBETA:
-          requires: [ ApproveTEST ]
-          context: BETA
+      # Variables used in build steps
+      - DX_CLI_URL: https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
+      - TESTLEVEL: RunLocalTests
+      - DEPLOYDIR: src
+    steps:
+      - checkout
+      - run:
+          name: "Create SFDX Folder" 
+          command: |
+            # Create sfdx directory
+            mkdir sfdx
+      - run:
+          name: Download CLI
+          command: |
+            # Download cli
+            wget -qO- $DX_CLI_URL | tar xJ -C sfdx --strip-components 1
+      - run:
+          name: Install CLI
+          command: |
+            # Install the cli
+            ./sfdx/install
+            sfdx
+      - run:
+          name: Decrypt server key
+          command: |
+            #Decrypt server key
+            openssl enc -nosalt -aes-256-cbc -d -in jwt/server.key.enc -out jwt/server.key -base64 -K $DECRYPTION_KEY -iv $DECRYPTION_IV
+      - run:
+          name: Authorize Target Deployment Org
+          command: |
+            #Authorize target org
+            sfdx force:auth:jwt:grant --instanceurl $ENDPOINT  --clientid $CONSUMER_KEY --jwtkeyfile jwt/server.key --username $USER_NAME --setalias UAT
+      - run:
+          name: Deploy to Target Deployment Org
+          command: |
+            #Deploy to target deployment org and run unit tests. 
+            sfdx force:mdapi:deploy --wait 10 --deploydir $DEPLOYDIR --targetusername UAT --testlevel $TESTLEVEL
+            
+            #Example shows how to run a check only deploy.
+            #sfdx force:mdapi:deploy --checkonly --wait 10 --deploydir $DEPLOYDIR --targetusername UAT --testlevel $TESTLEVEL
