@@ -113,16 +113,16 @@ jobs:
 
 workflows:
   version: 1
-    pipeline:
-      jobs:
-        - build
-        - deployToEnv:
-          requires: [ build ]
-          context: DEV
-            filters:
-              branches:
-                only: master
-        
-        - approveEnv:
-            requires: [ deployToEnv ]
-              type: approval
+  pipeline:
+    jobs:
+      - build
+      - deployToEnv:
+        requires: [ build ]
+        context: DEV
+          filters:
+            branches:
+              only: master
+      
+      - approveEnv:
+          requires: [ deployToEnv ]
+            type: approval
