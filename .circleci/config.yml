@@ -47,16 +47,16 @@ build_docker: &build_docker
         - TESTLEVEL: RunLocalTests
         - DEPLOYDIR: src
 
-  deployDev:
-    <<: *build_docker
-    steps:
-        - checkout #inbuild command through Circle to checkout the repo you authd 
-        - *createSFDX
-        - *getCLI
-        - *installCLI
-        - *decryptKey
-        - *auth
-        - *deploySource
+deployDev:
+  <<: *build_docker
+  steps:
+      - checkout #inbuild command through Circle to checkout the repo you authd 
+      - *createSFDX
+      - *getCLI
+      - *installCLI
+      - *decryptKey
+      - *auth
+      - *deploySource
   
   deploySource: &deploySource
     run:
