@@ -125,4 +125,4 @@ workflows:
       
       - approveEnv:
           requires: [ deployToEnv ]
-            type: approval
+          type: approval
