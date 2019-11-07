@@ -47,12 +47,12 @@ build_docker: &build_docker
         - TESTLEVEL: RunLocalTests
         - DEPLOYDIR: src
   
-  deploySource: &deploySource
-    run:
-      name: Deploying project via source api
-        command: |
-          cd project/
-          sfdx force:source:deploy -u dev -p force-app/ -w 8
+deploySource: &deploySource
+  run:
+    name: Deploying project via source api
+      command: |
+        cd project/
+        sfdx force:source:deploy -u dev -p force-app/ -w 8
 
 getCLI: &getCLI
     run:
