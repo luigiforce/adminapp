@@ -46,17 +46,6 @@ build_docker: &build_docker
         - DX_CLI_URL: https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
         - TESTLEVEL: RunLocalTests
         - DEPLOYDIR: src
-
-deployDev:
-  <<: *build_docker
-  steps:
-      - checkout #inbuild command through Circle to checkout the repo you authd 
-      - *createSFDX
-      - *getCLI
-      - *installCLI
-      - *decryptKey
-      - *auth
-      - *deploySource
   
   deploySource: &deploySource
     run:
@@ -86,6 +75,17 @@ run_local_tests: &run_local_tests
     command: |
       mkdir test
       sfdx force:apex:test:run -l RunLocalTests -r human -c -d test -u dev
+
+deployDev:
+  <<: *build_docker
+  steps:
+      - checkout #inbuild command through Circle to checkout the repo you authd 
+      - *createSFDX
+      - *getCLI
+      - *installCLI
+      - *decryptKey
+      - *auth
+      - *deploySource
 
 version: 1
 jobs: 
