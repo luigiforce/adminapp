@@ -79,7 +79,7 @@ run_local_tests: &run_local_tests
 deployDev:
   <<: *build_docker
   steps:
-      - checkout #inbuild command through Circle to checkout the repo you authd 
+      - checkout #inbuilt command through Circle to checkout the repo you authd 
       - *createSFDX
       - *getCLI
       - *installCLI
