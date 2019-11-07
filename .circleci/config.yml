@@ -119,9 +119,9 @@ workflows:
       - deployToEnv:
         requires: [ build ]
         context: DEV
-          filters:
-            branches:
-              only: master
+        filters:
+          branches:
+            only: master
       
       - approveEnv:
           requires: [ deployToEnv ]
