@@ -110,7 +110,8 @@ jobs:
         - *decryptKey
         - *auth
         - *run_local_tests
-        - *deployDev:
+        
+        - deployDev:
             requires: [ run_local_tests ]
             context: DEV
             filters:
