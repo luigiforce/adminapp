@@ -111,18 +111,18 @@ jobs:
         - *auth
         - *run_local_tests
 
-workflows:
-  version: 1
-  pipeline:
-    jobs:
-      - build
-      - deployToEnv:
-        requires: [ build ]
-        context: DEV
-        filters:
-          branches:
-            only: master
-      
-      - approveEnv:
-          requires: [ deployToEnv ]
-          type: approval
+#workflows:
+#  version: 1
+#  pipeline:
+#    jobs:
+#      - build
+#      - deployToEnv:
+#        requires: [ build ]
+#        context: DEV
+#        filters:
+#          branches:
+#            only: master
+#      
+#      - approveEnv:
+#          requires: [ deployToEnv ]
+#          type: approval
