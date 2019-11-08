@@ -89,38 +89,39 @@ deployJob: &deployJob
 
 version: 2  #specify version 2 to use circle 2.0 config
 jobs: 
-  #executer step <<: *build_docker 
-  build:
-    docker:
-      - image: circleci/node:8.9.4
-    environment:
+  set_up_env:
+    <<: *build_docker 
+      #build:
+      # docker:
+      #  - image: circleci/node:8.9.4
+      #environment:
       # from https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_install_cli_standalone.htm
       # and https://developer.salesforce.com/media/salesforce-cli/manifest.json
 
       # Variables used in build steps
-      - DX_CLI_URL: https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
-      - TESTLEVEL: RunLocalTests
-      - DEPLOYDIR: src
+      # - DX_CLI_URL: https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
+      #- TESTLEVEL: RunLocalTests
+      #- DEPLOYDIR: src
 
     steps:
-        - checkout #inbuilt command through Circle to checkout the repo you authd 
-        - *createSFDX
-        - *getCLI
-        - *installCLI
-        - *decryptKey
-        - *auth
-        - *run_local_tests
-  
-  deployDev:
-    <<: *deployJob
+      - checkout #inbuilt command through Circle to checkout the repo you authd 
+      - *createSFDX
+      - *getCLI
+      - *installCLI
+      - *decryptKey
+      - *auth
+      - *run_local_tests
+
+    deployDev:
+      <<: *deployJob
 
 workflows:
   version: 2 #specify version 2 to use circle 2.0 config
   pipeline:
     jobs:
-      - build
+      - set_up_env
       - deployDev:
-        requires: [ build ]
+        requires: [ set_up_env ]
         context: DEV
         filters:
           branches:
