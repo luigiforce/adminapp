@@ -9,7 +9,7 @@ auth: &auth
       command: |
         #Authorize target org
         cd ~/project
-        sfdx force:auth:jwt:grant --instanceurl $ENDPOINT --clientid $CONSUMER_KEY --jwtkeyfile jwt/server.key --username $USER_NAME --setalias dev -d
+        sfdx force:auth:jwt:grant --instanceurl $ENDPOINT --clientid $CONSUMER_KEY --jwtkeyfile jwt/server.key --username $USER_NAME --setalias dev -s
 
 createSFDX: &createSFDX
     run:
@@ -46,7 +46,7 @@ deploySource: &deploySource
     name: Deploying project via source api
     command: |
       cd project/
-      sfdx force:source:deploy -u dev -p force-app/ -w 8
+      sfdx force:source:deploy -u dev -p project/force-app/ -w 8
 
 getCLI: &getCLI
     run:
@@ -106,7 +106,7 @@ workflows:
     
       - deployDev:
           requires: [ set_up_env ]
-          context: DEV
+          #context: DEV
           filters:
             branches:
               only: master
