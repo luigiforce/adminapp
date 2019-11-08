@@ -110,14 +110,19 @@ jobs:
         - *decryptKey
         - *auth
         - *run_local_tests
-        
+
+workflows:
+  version: 1
+    build_test_deploy:
+      jobs:
+        - build
         - deployDev:
-            requires: [ run_local_tests ]
-            context: DEV
-            filters:
-              branches:
-                only: master
-        
+          requires: [ run_local_tests ]
+          context: DEV
+          filters:
+            branches:
+              only: master
+      
         - approveDev:
             requires: [ deployDev ]
             type: approval
