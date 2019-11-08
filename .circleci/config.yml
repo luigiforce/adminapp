@@ -45,8 +45,8 @@ deploySource: &deploySource
   run:
     name: Deploying project via source api
     command: |
-      cd project/
-      sfdx force:source:deploy -u dev -p project/force-app/ -w 8
+      cd ~/project
+      sfdx force:source:deploy -u dev -p force-app/ -w 8
 
 getCLI: &getCLI
     run:
@@ -96,6 +96,8 @@ jobs:
 
   deployDev: #specify deploy job alias up here so you can set a manual approval step to advance enviornments
     <<: *deployJob
+  #deployTest:
+  #  <<: *deployJob
 
 workflows:
   version: 2 #specify version 2 to use circle 2.0 config
@@ -114,3 +116,14 @@ workflows:
       - approveDev:
           requires: [ deployDev ]
           type: approval
+
+      #- deployTest:
+      #    requires: [ approveDev ]
+      #    #context: TEST
+      #    filters:
+      #      branches:
+      #        only: master
+    
+      #- deployTest:
+      #    requires: [ approveDev ]
+      #    type: approval
