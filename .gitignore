@@ -1,3 +1,4 @@
 .DS_Store
 .sfdx
 .sfdx/sfdx-config.json
+.vscode/settings.json
