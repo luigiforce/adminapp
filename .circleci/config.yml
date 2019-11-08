@@ -35,18 +35,11 @@ deploy: &deploy
 
 build_docker: &build_docker
     working_directory: '~/project'
-    build:
-      docker:
-        - image: circleci/node:8.9.4
-      environment:
-        # from https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_install_cli_standalone.htm
-        # and https://developer.salesforce.com/media/salesforce-cli/manifest.json
+    docker:
+      - image: circleci/node:8.9.4
+    environment:
+    - DX_CLI_URL: https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
 
-        # Variables used in build steps
-        - DX_CLI_URL: https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
-        - TESTLEVEL: RunLocalTests
-        - DEPLOYDIR: src
-  
 deploySource: &deploySource
   run:
     name: Deploying project via source api
@@ -76,7 +69,7 @@ run_local_tests: &run_local_tests
       mkdir test
       sfdx force:apex:test:run -l RunLocalTests -r human -c -d test -u dev
 
-deployDev:
+deployJob: &deployJob
   <<: *build_docker
   steps:
       - checkout #inbuilt command through Circle to checkout the repo you authd 
@@ -87,42 +80,36 @@ deployDev:
       - *auth
       - *deploySource
 
-version: 1
+version: 2  #specify version 2 to use circle 2.0 config
 jobs: 
-  #executer step <<: *build_docker 
-  build:
-    docker:
-      - image: circleci/node:8.9.4
-    environment:
-      # from https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_install_cli_standalone.htm
-      # and https://developer.salesforce.com/media/salesforce-cli/manifest.json
-
-      # Variables used in build steps
-      - DX_CLI_URL: https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
-      - TESTLEVEL: RunLocalTests
-      - DEPLOYDIR: src
-
+  set_up_env:
+    <<: *build_docker
     steps:
-        - checkout #inbuild command through Circle to checkout the repo you authd 
-        - *createSFDX
-        - *getCLI
-        - *installCLI
-        - *decryptKey
-        - *auth
-        - *run_local_tests
+      - checkout #inbuilt command through Circle to checkout the repo you authd 
+      - *createSFDX
+      - *getCLI
+      - *installCLI
+      - *decryptKey
+      - *auth
+    #  - *run_local_tests
 
-#workflows:
-#  version: 1
-#  pipeline:
-#    jobs:
-#      - build
-#      - deployToEnv:
-#        requires: [ build ]
-#        context: DEV
-#        filters:
-#          branches:
-#            only: master
-#      
-#      - approveEnv:
-#          requires: [ deployToEnv ]
-#          type: approval
+  deployDev:
+    <<: *deployJob
+
+workflows:
+  version: 2 #specify version 2 to use circle 2.0 config
+  pipeline:
+    jobs:
+
+      - set_up_env
+    
+      - deployDev:
+          requires: [ set_up_env ]
+          context: DEV
+          filters:
+            branches:
+              only: master
+    
+      - approveDev:
+          requires: [ deployDev ]
+          type: approval

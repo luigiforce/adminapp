@@ -17,7 +17,7 @@ while [ -z "$ORG_ALIAS" ] && [ -z "$DURATION" ]
         echo "okay thanks, requesting new org"
 
         #referencing local files and using the '-s' to make this scratch org your default username
-        sfdx force:org:create -s -f config/project-scratch-def.json -a ${ORG_ALIAS} -d ${DURATION}
+        #sfdx force:org:create -s -f config/project-scratch-def.json -a ${ORG_ALIAS} -d ${DURATION}
     done
 
 #each command gets a pid, process id represented by $? if this fails then we'll let you know.
@@ -31,7 +31,7 @@ fi
 
 echo "we got an org, lets push some code!"
 
-sfdx force:source:push -u ${ORG_ALIAS} -g -f
+#sfdx force:source:push -u ${ORG_ALIAS} -g -f
 
 if [ "$?" = "1" ]
 then
