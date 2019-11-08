@@ -87,7 +87,7 @@ deployDev:
       - *auth
       - *deploySource
 
-version: 2
+version: 2  #specify version 2 to use circle 2.0 config
 jobs: 
   #executer step <<: *build_docker 
   build:
@@ -103,7 +103,7 @@ jobs:
       - DEPLOYDIR: src
 
     steps:
-        - checkout #inbuild command through Circle to checkout the repo you authd 
+        - checkout #inbuilt command through Circle to checkout the repo you authd 
         - *createSFDX
         - *getCLI
         - *installCLI
@@ -112,12 +112,12 @@ jobs:
         - *run_local_tests
 
 workflows:
-  version: 2
-  build_test_deploy:
+  version: 2 #specify version 2 to use circle 2.0 config
+  pipeline:
     jobs:
       - build
       - deployDev:
-        requires: [ run_local_tests ]
+        requires: [ build ]
         context: DEV
         filters:
           branches:
