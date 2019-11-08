@@ -76,7 +76,7 @@ run_local_tests: &run_local_tests
       mkdir test
       sfdx force:apex:test:run -l RunLocalTests -r human -c -d test -u dev
 
-deploy:
+deployJob:
   <<: *build_docker
   steps:
       - checkout #inbuilt command through Circle to checkout the repo you authd 
@@ -112,7 +112,7 @@ jobs:
         - *run_local_tests
   
   deployDev:
-    <<: *deploy
+    <<: *deployJob
 
 workflows:
   version: 2 #specify version 2 to use circle 2.0 config
