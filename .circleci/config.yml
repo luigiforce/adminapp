@@ -37,6 +37,8 @@ build_docker: &build_docker
     working_directory: '~/project'
     docker:
       - image: circleci/node:8.9.4
+    environment:
+    - DX_CLI_URL: https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
 
 deploySource: &deploySource
   run:
