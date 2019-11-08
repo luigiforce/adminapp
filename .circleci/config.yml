@@ -129,7 +129,7 @@ workflows:
               only: master
     
       - approveTest:
-          requires: [ approveDev ]
+          requires: [ deployTest ]
           type: approval
       
       - deployBeta:
