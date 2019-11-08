@@ -91,7 +91,7 @@ jobs:
       - *installCLI
       - *decryptKey
       - *auth
-      - *run_local_tests
+    #  - *run_local_tests
 
   deployDev:
     <<: *deployJob
