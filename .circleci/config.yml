@@ -96,9 +96,13 @@ jobs:
 
   deployDev: #specify deploy job alias up here so you can set a manual approval step to advance enviornments
     <<: *deployJob
-  #deployTest:
-  #  <<: *deployJob
-
+  deployTest:
+    <<: *deployJob
+  deployBeta:
+    <<: *deployJob
+  deployProd:
+    <<: *deployJob
+    
 workflows:
   version: 2 #specify version 2 to use circle 2.0 config
   pipeline:
@@ -117,13 +121,32 @@ workflows:
           requires: [ deployDev ]
           type: approval
 
-      #- deployTest:
-      #    requires: [ approveDev ]
-      #    #context: TEST
-      #    filters:
-      #      branches:
-      #        only: master
+      - deployTest:
+          requires: [ approveDev ]
+          #context: TEST
+          filters:
+            branches:
+              only: master
     
-      #- deployTest:
-      #    requires: [ approveDev ]
-      #    type: approval
+      - approveTest:
+          requires: [ approveDev ]
+          type: approval
+      
+      - deployBeta:
+          requires: [ approveTest ]
+          #context: BETA
+          filters:
+            branches:
+              only: master
+    
+      - approveBeta:
+          requires: [ approveBeta ]
+          type: approval
+      
+      - deployProd:
+          requires: [ approveTest ]
+          #context: BETA
+          filters:
+            branches:
+              only: master
+      
