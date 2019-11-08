@@ -76,7 +76,7 @@ run_local_tests: &run_local_tests
       mkdir test
       sfdx force:apex:test:run -l RunLocalTests -r human -c -d test -u dev
 
-deployJob:
+deployJob: &deployJob
   <<: *build_docker
   steps:
       - checkout #inbuilt command through Circle to checkout the repo you authd 
