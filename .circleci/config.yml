@@ -102,7 +102,7 @@ jobs:
     <<: *deployJob
   deployProd:
     <<: *deployJob
-    
+
 workflows:
   version: 2 #specify version 2 to use circle 2.0 config
   pipeline:
@@ -140,12 +140,12 @@ workflows:
               only: master
     
       - approveBeta:
-          requires: [ approveBeta ]
+          requires: [ deployBeta ]
           type: approval
       
       - deployProd:
-          requires: [ approveTest ]
-          #context: BETA
+          requires: [ approveBeta ]
+          #context: PROD
           filters:
             branches:
               only: master
