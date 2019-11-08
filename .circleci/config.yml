@@ -39,13 +39,13 @@ build_docker: &build_docker
       docker:
         - image: circleci/node:8.9.4
       environment:
-        # from https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_install_cli_standalone.htm
-        # and https://developer.salesforce.com/media/salesforce-cli/manifest.json
+      # from https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_install_cli_standalone.htm
+      # and https://developer.salesforce.com/media/salesforce-cli/manifest.json
 
-        # Variables used in build steps
-        - DX_CLI_URL: https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
-        - TESTLEVEL: RunLocalTests
-        - DEPLOYDIR: src
+      # Variables used in build steps
+      - DX_CLI_URL: https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
+      - TESTLEVEL: RunLocalTests
+      - DEPLOYDIR: src
   
 deploySource: &deploySource
   run:
@@ -90,19 +90,7 @@ deployJob: &deployJob
 version: 2  #specify version 2 to use circle 2.0 config
 jobs: 
   set_up_env:
-    #<<: *build_docker 
-    build:
-      docker:
-        - image: circleci/node:8.9.4
-      environment:
-        # from https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_install_cli_standalone.htm
-        # and https://developer.salesforce.com/media/salesforce-cli/manifest.json
-
-        # Variables used in build steps
-        - DX_CLI_URL: https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
-        - TESTLEVEL: RunLocalTests
-        - DEPLOYDIR: src
-
+    <<: *build_docker 
     steps:
       - checkout #inbuilt command through Circle to checkout the repo you authd 
       - *createSFDX
