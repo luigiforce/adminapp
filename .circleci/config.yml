@@ -112,8 +112,8 @@ jobs:
       - *auth
       - *run_local_tests
 
-    deployDev:
-      <<: *deployJob
+  deployDev:
+    <<: *deployJob
 
 workflows:
   version: 2 #specify version 2 to use circle 2.0 config
