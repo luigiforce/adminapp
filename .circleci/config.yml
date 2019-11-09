@@ -92,7 +92,7 @@ jobs:
       - *installCLI
       - *decryptKey
       - *auth
-    #  - *run_local_tests
+      - *run_local_tests
 
   deployDev: #specify deploy job alias up here so you can set a manual approval step to advance enviornments
     <<: *deployJob
