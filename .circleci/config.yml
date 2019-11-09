@@ -92,7 +92,7 @@ jobs:
       - *installCLI
       - *decryptKey
       - *auth
-    #  - *run_local_tests
+      - *run_local_tests
 
   deployDev: #specify deploy job alias up here so you can set a manual approval step to advance enviornments
     <<: *deployJob
@@ -112,7 +112,7 @@ workflows:
     
       - deployDev:
           requires: [ set_up_env ]
-          #context: DEV
+          context: DEV
           filters:
             branches:
               only: master
@@ -123,7 +123,7 @@ workflows:
 
       - deployTest:
           requires: [ approveDev ]
-          #context: TEST
+          context: TEST
           filters:
             branches:
               only: master
